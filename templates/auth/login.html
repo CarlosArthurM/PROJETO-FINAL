@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>LOGIN</title>
+</head>
+
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="position-fixed top-0 start-50 translate-middle-x mt-4" role="alert" style="z-index: 1;">
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show p-2">
+                    <strong>{{ message }}</strong>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
+        <div class="card shadow p-4" style="width: 400px;">
+            <h4 class="text-center mb-4">LOGIN</h4>
+
+            <form action="{% url 'login_aluno' %}" method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">CPF</label>
+                    <input type="text" class="cpf form-control" name="cpf" placeholder="Digite seu CPF" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Senha</label>
+                    <input type="password" class="form-control" name="senha" placeholder="Digite sua senha" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Entrar</button>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'tela_login_fun' %}">Sou Funcionário</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.cpf').mask('000.000.000-00', {reverse: true});
+
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

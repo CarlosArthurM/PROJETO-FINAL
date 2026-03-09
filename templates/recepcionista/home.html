@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        ul li {
+            list-style-type: none;
+        }
+    </style>
+    <title>Painel da Recepcionista</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
+            <h2 style="text-transform: uppercase; margin: 0;">BEM VINDO(A), {{ nome_funcionario.split.0 }}</h2>
+            <ul class="m-0 d-flex gap-2">
+                <li><a href="{% url 'tela_cadastro' %}" class="btn">Cadastrar Aluno</a></li>
+                <li><a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="position-fixed top-0 start-50 translate-middle-x mt-4" role="alert" style="z-index: 1;">
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show p-2">
+                    <strong>{{ message }}</strong>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <main>
+        <div class="container p-4" style="position: relative; top: 80px;">
+            <div class="d-flex align-items-center justify-content-between">
+                <h4>ALUNOS:</h4>
+                <div>
+                    <form method="GET" action="{% url 'home_recepcionista' %}">
+                        <input type="text" name="search" class="form-control" placeholder="Digite para buscar..." value="{{ request.GET.search }}">
+                    </form>
+                </div>
+            </div>
+            
+            <div class="row gap-2" style="position: relative; top: 20px; height: 60vh; overflow-y: auto;">
+                {% if Alunos %}
+                    {% for aluno in Alunos %}
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mt-4">
+                            <div class="card p-2">
+                                <ul class="mb-2 p-0">
+                                    <form action="{% url 'editar_aluno' aluno.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <li>
+                                            <label class="form-label fw-semibold">Nome Completo:</label>
+                                            <input type="text" class="form-control" value="{{ aluno.nome }}" name="nome" placeholder="Nome completo" required>
+                                        </li>
+
+                                        <li>
+                                            <label class="form-label fw-semibold">Telefone:</label>
+                                            <input type="text" class="tell form-control" value="{{ aluno.telefone }}" name="tell" placeholder="Telefone" required>
+                                        </li>
+
+                                        <li>
+                                            <label class="form-label fw-semibold">Sexo:</label>
+                                            <select name="sexo" id="sexo" class="form-select" required>
+                                                <option {% if aluno.sexo == "M" %}selected{% endif %} value="M">Masculino</option>
+                                                <option {% if aluno.sexo == "F" %}selected{% endif %} value="F">Feminino</option>
+                                            </select>
+                                        </li>
+                                        
+                                        <li>
+                                            <label class="form-label fw-semibold">CPF:</label>
+                                            <input type="text" class="cpf form-control" value="{{ aluno.cpf }}" name="cpf" placeholder="CPF" required>
+                                        </li>
+
+                                        <li>
+                                            <label class="form-label fw-semibold">Data de Nascimento:</label>
+                                            <input type="date" class="form-control" value="{{ aluno.data_nascimento|date:'Y-m-d' }}" name="data_nascimento" required>
+                                        </li>
+
+                                        <div class="mt-4">
+                                            <button type="submit" class="btn btn-primary" style="width: 100%;">Editar Aluno</button>
+                                        </div>
+                                    </form>
+                                </ul>
+                                
+                                <form action="{% url 'deletar_aluno' aluno.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este aluno?')">
+                                        Deletar Aluno
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <p class="text-center">Nenhum aluno cadastrado</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('.tell').mask('(00) 00000-0000');
+            $('.cpf').mask('000.000.000-00', {reverse: true});
+
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
