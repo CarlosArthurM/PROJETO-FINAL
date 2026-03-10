@@ -98,14 +98,7 @@ def fichas_aluno(request, aluno_id):
 
     fichas_com_exercicios = []
     for ficha in fichas:
-        exercicios_lista = lista_exercicios.objects.filter(
-            fk_ficha=ficha
-        ).select_related('fk_exercicio').values(
-            'fk_exercicio__nome',
-            'fk_exercicio__id',
-            'series',
-            'repeticoes'
-        )
+        exercicios_lista = lista_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio').values('fk_exercicio__nome','fk_exercicio__id','series','repeticoes')
         
         fichas_com_exercicios.append({
             'ficha': ficha,
@@ -439,6 +432,8 @@ def editar_ficha(request, aluno_id, treino_id):
         ficha.grupo = grupo
         ficha.nivel = nivel
         ficha.save()
+
+        lista_exercicios.objects.filter(fk_ficha=ficha).delete()
 
         for id_ex, ser, rep in zip(id_exercicios, series, repeticoes):
             lista_exercicios.objects.create(
