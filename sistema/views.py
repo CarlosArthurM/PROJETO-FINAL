@@ -12,12 +12,9 @@ def tela_login(request):
     return render(request, "auth/login.html")
 
 
-
 # PÁGINA DE LOGIN PARA FUNCIONARIOS
 def tela_login_fun(request):
     return render(request, "auth/login_funcionarios.html")
-
-
 
 
 # ROTA PARA SAIR DA CONTA
@@ -28,7 +25,7 @@ def logout(request):
 
 
 # PÁGINA PARA CADASTRAR ALUNOS
-def tela_cadastro(request):
+def cadastro_aluno(request):
     return render(request, "recepcionista/cadastro_aluno.html")
 
 
@@ -93,6 +90,8 @@ def fichas_aluno(request, aluno_id):
     if not request.session.get("id") or request.session.get("cargo") != "instrutor":
         return redirect('tela_login_fun')
     
+    nome_aluno = alunos.objects.filter(id=aluno_id).first()
+    
     fichas = fichas_treino.objects.filter(fk_aluno_id=aluno_id)
     exercicios_list = exercicios.objects.all().order_by('nome')
 
@@ -108,7 +107,8 @@ def fichas_aluno(request, aluno_id):
     return render(request, "instrutor/ficha_aluno.html", {
         'fichas_com_exercicios': fichas_com_exercicios, 
         'aluno_id': aluno_id, 
-        'Exercicios': exercicios_list
+        'Exercicios': exercicios_list,
+        'nome_aluno': nome_aluno.nome
     })
 
 
@@ -122,15 +122,10 @@ def home_aluno(request):
     aluno_id = request.session['id'] 
     lista_fichas = []
 
-    fichas = fichas_treino.objects.filter(
-        fk_aluno_id=aluno_id
-    ).select_related('fk_funcionario')
-
+    fichas = fichas_treino.objects.filter(fk_aluno_id=aluno_id).select_related('fk_funcionario')
     for ficha in fichas:
-        exercicios_ficha = lista_exercicios.objects.filter(
-            fk_ficha=ficha
-        ).select_related('fk_exercicio')
-
+        exercicios_ficha = lista_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio')
+        
         exercicios_lista = []
         for item in exercicios_ficha:
             exercicios_lista.append({
@@ -148,6 +143,7 @@ def home_aluno(request):
             "data_criacao": ficha.data_criacao,
             "exercicios": exercicios_lista
         })
+
 
     return render(request, "alunos/home.html", {
         'fichas': lista_fichas, 

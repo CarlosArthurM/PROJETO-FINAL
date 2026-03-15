@@ -3,11 +3,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Páginas principais
+    # páginas principais
     path('', views.tela_login, name='tela_login'),
     path('login_funcionarios', views.tela_login_fun, name='tela_login_fun'),
+
+    #ROTA PARA DESLOGAR
     path('logout', views.logout, name='logout'),
-    path('cadastro', views.tela_cadastro, name='tela_cadastro'),
+
+    #página cadastro de alunos 
+    path('cadastro_aluno', views.cadastro_aluno, name='tela_cadastro'),
+
+    #página cadastro de funcionários
     path('cadastro_funcionarios', views.cadastro_funcionarios, name='cadastro_funcionarios'),
     
     # Home pages

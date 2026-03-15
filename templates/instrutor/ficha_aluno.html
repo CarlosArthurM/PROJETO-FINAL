@@ -11,12 +11,13 @@
             list-style-type: none;
         }
     </style>
-    <title>Treino do aluno</title>
+    <title>TREINO DO ALUNO</title>
 </head>
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-end p-4">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
+            <h2 style="text-transform: uppercase; margin: 0;">FICHAS DE {{nome_aluno}}</h2>
             <ul class="m-0 d-flex gap-2">
                 <a href="{% url 'cadastro_fichas' aluno_id %}" class="btn">Cadastrar Ficha de Treino</a>
                 <li><a href="{% url 'home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
