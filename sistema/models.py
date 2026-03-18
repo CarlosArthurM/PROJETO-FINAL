@@ -22,6 +22,31 @@ class alunos(models.Model):
         db_table = "alunos"
 
 
+
+#tabela pagamentos
+class pagamentos(models.Model):
+
+    PAGAMENTO_CHOICES = [
+        ('Cartão Crédito','Cartão Crédito'),
+        ('Cartão Débito','Cartão Débito'),
+        ('Pix','Pix'),
+        ('Dinheiro','Dinheiro')
+    ]
+
+    id = models.AutoField(primary_key=True)
+    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES)
+    valor = models.DecimalField(decimal_places=2, max_digits=10)
+    data_pagamento = models.DateField(auto_now_add=True)
+    data_vencimento = models.DateField()
+    fk_aluno = models.ForeignKey(alunos,db_column='fk_aluno', on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        db_table = "pagamentos"
+
+
+
+
+
 # tabela funcionarios
 class funcionarios(models.Model):
 
@@ -113,7 +138,7 @@ class exercicios(models.Model):
 
 
 # tabela lista_exercicios
-class lista_exercicios(models.Model):
+class listas_exercicios(models.Model):
 
     id = models.AutoField(primary_key=True)
     repeticoes = models.IntegerField()
@@ -132,4 +157,4 @@ class lista_exercicios(models.Model):
     )
 
     class Meta:
-        db_table = "lista_exercicios"
+        db_table = "listas_exercicios"

@@ -46,9 +46,10 @@
                 </div>
             </div>
             
-            <div class="row gap-2" style="position: relative; top: 20px; height: 60vh; overflow-y: auto;">
-                {% if Alunos %}
-                    {% for aluno in Alunos %}
+                    <div class="row gap-2" style="position: relative; height: 70vh; overflow-y: auto;">
+                        {% if Alunos %}
+                        {% for aluno in Alunos %}
+
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3 mt-4">
                             <div class="card p-2">
                                 <ul class="mb-2 p-0">
@@ -73,8 +74,8 @@
                                         </li>
                                         
                                         <li>
-                                            <label class="form-label fw-semibold">CPF:</label>
-                                            <input type="text" class="cpf form-control" value="{{ aluno.cpf }}" name="cpf" placeholder="CPF" required>
+                                            <label class="form-label fw-semibold">CPF(Digite apenas se quiser redefinir):</label>
+                                            <input type="text" class="cpf form-control" name="cpf" placeholder="XXX.XXX.XXX-XX">
                                         </li>
 
                                         <li>
@@ -82,8 +83,17 @@
                                             <input type="date" class="form-control" value="{{ aluno.data_nascimento|date:'Y-m-d' }}" name="data_nascimento" required>
                                         </li>
 
-                                        <div class="mt-4">
-                                            <button type="submit" class="btn btn-primary" style="width: 100%;">Editar Aluno</button>
+                                        <li>
+                                            <p>Matrícula feita em {{aluno.data_matricula|date:'d/m/Y'}}</p>
+                                        </li>
+
+                                        <div class="mt-2">
+                                            <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="return confirm('Tem certeza que deseja ataualizar os dados desse aluno?')" >Editar Aluno</button>
+                                            
+                                        </div>
+                                        
+                                        <div class="mt-2">
+                                            <a href="{% url 'page_pagamentos' aluno.id %}" type="button" class="btn btn-primary" style="width: 100%;">Administrar Pagamento</a>
                                         </div>
                                     </form>
                                 </ul>
@@ -99,7 +109,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="col-12">
-                        <p class="text-center">Nenhum aluno cadastrado</p>
+                        <p class="text-center">NENHUM ALUNO CADASTRADO</p>
                     </div>
                 {% endif %}
             </div>
@@ -114,7 +124,10 @@
         $(document).ready(function() {
             $('.tell').mask('(00) 00000-0000');
             $('.cpf').mask('000.000.000-00', {reverse: true});
+            $('.valor').mask('000.000.000.000.000,00', {reverse: true});
+        });
 
+        $(document).ready(function() {
             setTimeout(function() {
                 $('.alert').fadeOut('slow');
             }, 5000);

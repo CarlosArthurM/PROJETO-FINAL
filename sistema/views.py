@@ -1,9 +1,10 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from datetime import datetime, date
+from datetime import datetime, timedelta
 import re
-from .models import alunos, funcionarios, exercicios, fichas_treino, lista_exercicios
+from .models import alunos, funcionarios, exercicios, fichas_treino, listas_exercicios, pagamentos
+from decimal import Decimal
 
 
 
@@ -24,96 +25,6 @@ def logout(request):
 
 
 
-# PÁGINA PARA CADASTRAR ALUNOS
-def cadastro_aluno(request):
-    return render(request, "recepcionista/cadastro_aluno.html")
-
-
-
-
-# PÁGINA DE CADASTRO DE FICHA 
-def cadastro_fichas(request, aluno_id):
-    exercicios_list = exercicios.objects.all().order_by('nome')
-    return render(request, 'instrutor/cadastro_fichas.html', {
-        'aluno_id': aluno_id, 
-        'Exercicios': exercicios_list
-    })
-
-
-
-
-# PÁGINA DE CADASTRO DE FUNCIONÁRIOS
-def cadastro_funcionarios(request):
-    return render(request, 'adm/cadastro_funcionarios.html')
-
-
-
-
-# PÁGINA PRINCIPAL DA RECEPCIONISTA
-def home_recepcionista(request):
-    if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
-        return redirect('tela_login_fun')
-    
-    nome_funcionario = request.session['nome']
-    busca = request.GET.get('search')
-
-    if busca:
-        alunos_list = alunos.objects.filter(nome__icontains=busca)
-    else:
-        alunos_list = alunos.objects.all()
-
-    return render(request, 'recepcionista/home.html', {
-        'Alunos': alunos_list, 
-        'nome_funcionario': nome_funcionario
-    })
-
-
-
-# PÁGINA PRINCIPAL ADMINISTRADOR
-def home_administrador(request):
-    if not request.session.get("id") or request.session.get("cargo") != "administrador":
-        return redirect('tela_login_fun')
-    
-    nome_funcionario = request.session['nome']
-    lista_funcionarios = funcionarios.objects.exclude(cargo="administrador")
-
-    return render(request, 'adm/home.html', {
-        'nome_funcionario': nome_funcionario, 
-        'lista_funcionarios': lista_funcionarios
-    })
-
-
-
-
-# PÁGINA PARA VISUALIZAR FICHA DE TREINO DO ALUNO
-def fichas_aluno(request, aluno_id):
-    if not request.session.get("id") or request.session.get("cargo") != "instrutor":
-        return redirect('tela_login_fun')
-    
-    nome_aluno = alunos.objects.filter(id=aluno_id).first()
-    
-    fichas = fichas_treino.objects.filter(fk_aluno_id=aluno_id)
-    exercicios_list = exercicios.objects.all().order_by('nome')
-
-    fichas_com_exercicios = []
-    for ficha in fichas:
-        exercicios_lista = lista_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio').values('fk_exercicio__nome','fk_exercicio__id','series','repeticoes')
-        
-        fichas_com_exercicios.append({
-            'ficha': ficha,
-            'exercicios': exercicios_lista
-        })
-
-    return render(request, "instrutor/ficha_aluno.html", {
-        'fichas_com_exercicios': fichas_com_exercicios, 
-        'aluno_id': aluno_id, 
-        'Exercicios': exercicios_list,
-        'nome_aluno': nome_aluno.nome
-    })
-
-
-
-
 # PÁGINA PRINCIPAL DO ALUNO
 def home_aluno(request):
     if not request.session.get("id"):
@@ -124,7 +35,7 @@ def home_aluno(request):
 
     fichas = fichas_treino.objects.filter(fk_aluno_id=aluno_id).select_related('fk_funcionario')
     for ficha in fichas:
-        exercicios_ficha = lista_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio')
+        exercicios_ficha = listas_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio')
         
         exercicios_lista = []
         for item in exercicios_ficha:
@@ -153,43 +64,6 @@ def home_aluno(request):
 
 
 
-# PÁGINA PRINCIPAL DO INSTRUTOR
-def home_instrutor(request):
-    if not request.session.get("id") or request.session.get("cargo") != "instrutor":
-        return redirect('tela_login_fun')
-    
-    nome_funcionario = request.session['nome']
-    busca = request.GET.get('search')
-
-    if busca:
-        alunos_list = alunos.objects.filter(nome__icontains=busca)
-    else:
-        alunos_list = alunos.objects.all()
-
-    lista_completa = []
-    data_atual = datetime.today().date()
-
-    for aluno in alunos_list:
-        ficha = fichas_treino.objects.filter(fk_aluno=aluno).first()
-        nascimento = aluno.data_nascimento
-
-        idade = data_atual.year - nascimento.year
-        if (data_atual.month, data_atual.day) < (nascimento.month, nascimento.day):
-            idade -= 1
-            
-        lista_completa.append({
-            "aluno": aluno,
-            "idade": idade,
-            "ficha": ficha
-        })
-    
-    return render(request, "instrutor/home.html", {
-        'lista_completa': lista_completa, 
-        'nome_funcionario': nome_funcionario
-    })
-
-
-
 # ROTA PARA O ALUNO FAZER LOGIN
 def login_aluno(request):
     if request.method != 'POST':
@@ -215,6 +89,12 @@ def login_aluno(request):
             messages.success(request, "SENHA CADASTRADA COM SUCESSO. FAÇA LOGIN NOVAMENTE")
             return redirect('tela_login')
         
+        pagamento = pagamentos.objects.filter(fk_aluno_id = aluno.id).last()
+
+        if not pagamento or pagamento.data_vencimento <= datetime.today().date():
+            messages.error(request,"VOCÊ PRECISA FAZER O PAGAMENTO DA MENSALIDADE")
+            return redirect('tela_login')
+
         if senha == aluno.senha:
             request.session['id'] = aluno.id
             request.session['nome'] = aluno.nome
@@ -280,7 +160,88 @@ def login_funcionario(request):
 
 
 
-# -------------------FUNCIONALIDADES DO INSTRUTOR--------------------#
+# ------------------- INSTRUTOR --------------------#
+
+
+
+
+
+# PÁGINA PRINCIPAL DO INSTRUTOR
+def home_instrutor(request):
+    if not request.session.get("id") or request.session.get("cargo") != "instrutor":
+        return redirect('tela_login_fun')
+    
+    nome_funcionario = request.session['nome']
+    busca = request.GET.get('search')
+
+    if busca:
+        alunos_list = alunos.objects.filter(nome__icontains=busca)
+    else:
+        alunos_list = alunos.objects.all()
+
+    lista_completa = []
+    data_atual = datetime.today().date()
+
+    for aluno in alunos_list:
+        ficha = fichas_treino.objects.filter(fk_aluno=aluno).first()
+        nascimento = aluno.data_nascimento
+
+        idade = data_atual.year - nascimento.year
+        if (data_atual.month, data_atual.day) < (nascimento.month, nascimento.day):
+            idade -= 1
+            
+        lista_completa.append({
+            "aluno": aluno,
+            "idade": idade,
+            "ficha": ficha
+        })
+    
+    return render(request, "instrutor/home.html", {
+        'lista_completa': lista_completa, 
+        'nome_funcionario': nome_funcionario
+    })
+
+
+
+
+
+
+# PÁGINA PARA VISUALIZAR FICHA DE TREINO DO ALUNO
+def fichas_aluno(request, aluno_id):
+    if not request.session.get("id") or request.session.get("cargo") != "instrutor":
+        return redirect('tela_login_fun')
+    
+    nome_aluno = alunos.objects.filter(id=aluno_id).first()
+    
+    fichas = fichas_treino.objects.filter(fk_aluno_id=aluno_id)
+    exercicios_list = exercicios.objects.all().order_by('nome')
+
+    fichas_com_exercicios = []
+    for ficha in fichas:
+        exercicios_lista = listas_exercicios.objects.filter(fk_ficha=ficha).select_related('fk_exercicio').values('fk_exercicio__nome','fk_exercicio__id','series','repeticoes')
+        
+        fichas_com_exercicios.append({
+            'ficha': ficha,
+            'exercicios': exercicios_lista
+        })
+
+    return render(request, "instrutor/ficha_aluno.html", {
+        'fichas_com_exercicios': fichas_com_exercicios, 
+        'aluno_id': aluno_id, 
+        'Exercicios': exercicios_list,
+        'nome_aluno': nome_aluno.nome
+    })
+
+
+
+
+# PÁGINA DE CADASTRO DE FICHA 
+def cadastro_fichas(request, aluno_id):
+    exercicios_list = exercicios.objects.all().order_by('nome')
+    return render(request, 'instrutor/cadastro_fichas.html', {
+        'aluno_id': aluno_id, 
+        'Exercicios': exercicios_list
+    })
 
 
 
@@ -309,7 +270,7 @@ def cadastrar_treino(request, aluno_id):
 
         # ADICIONA OS EXERCICIOS NA FICHA
         for id_ex, series, rep in zip(id_exercicios, lista_series, lista_repeticoes):
-            lista_exercicios.objects.create(series=series,repeticoes=rep,fk_ficha=ficha,fk_exercicio_id=id_ex)
+            listas_exercicios.objects.create(series=series,repeticoes=rep,fk_ficha=ficha,fk_exercicio_id=id_ex)
             
         messages.success(request, "FICHA CADASTRADA COM SUCESSO")
         return redirect('cadastro_fichas', aluno_id=aluno_id)
@@ -317,10 +278,6 @@ def cadastrar_treino(request, aluno_id):
     except ValueError:
         messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
         return redirect('cadastro_fichas', aluno_id=aluno_id)
-
-
-
-
 
 
 
@@ -341,10 +298,6 @@ def cadastro_exercicios(request):
     return render(request, "instrutor/cadastro_exercicios.html", {
         'Exercicios': exercicios_list
     })
-
-
-
-
 
 
 
@@ -372,9 +325,6 @@ def cadastrar_exercicio(request):
     except Exception:
         messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
         return redirect('cadastro_exercicios')
-
-
-
 
 
 
@@ -409,8 +359,6 @@ def editar_exercicio(request, id):
 
 
 
-
-
 # ROTA PARA EDITAR A FICHA
 def editar_ficha(request, aluno_id, treino_id):
     if not request.session.get("id") or request.session.get("cargo") != "instrutor":
@@ -429,10 +377,10 @@ def editar_ficha(request, aluno_id, treino_id):
         ficha.nivel = nivel
         ficha.save()
 
-        lista_exercicios.objects.filter(fk_ficha=ficha).delete()
+        listas_exercicios.objects.filter(fk_ficha=ficha).delete()
 
         for id_ex, ser, rep in zip(id_exercicios, series, repeticoes):
-            lista_exercicios.objects.create(
+            listas_exercicios.objects.create(
                 repeticoes=rep,
                 series=ser,
                 fk_ficha=ficha,
@@ -445,8 +393,6 @@ def editar_ficha(request, aluno_id, treino_id):
     except Exception as err:
         print(err)
         return redirect('fichas_aluno', aluno_id=aluno_id)
-
-
 
 
 
@@ -468,7 +414,7 @@ def adicionar_exercicio(request, aluno_id, ficha_id):
             messages.error(request, "PREENCHA TODOS OS CAMPOS")
             return redirect('fichas_aluno', aluno_id=aluno_id)
         
-        lista_exercicios.objects.create(
+        listas_exercicios.objects.create(
             series=series,
             repeticoes=repeticoes,
             fk_ficha_id=ficha_id,
@@ -479,9 +425,6 @@ def adicionar_exercicio(request, aluno_id, ficha_id):
         
     except Exception:
         return redirect('fichas_aluno', aluno_id=aluno_id)
-
-
-
 
 
 
@@ -505,9 +448,6 @@ def deletar_exercicio(request, id):
 
 
 
-
-
-
 # ROTA PARA DELETAR O TREINO DO ALUNO PELO ID
 def deletar_treino(request, aluno_id):
     if not request.session.get("id") or request.session.get("cargo") != "instrutor":
@@ -526,17 +466,13 @@ def deletar_treino(request, aluno_id):
 
 
 
-
-
-
-
 # ROTA PARA DELETAR A FICHA DE EXERCICIOS DO ALUNO 
 def deletar_ficha(request, aluno_id, ficha_id):
     if not request.session.get("id") or request.session.get("cargo") != "instrutor":
         return redirect('tela_login_fun')
     
     try:
-        lista_exercicios.objects.filter(fk_ficha_id=ficha_id).delete()
+        listas_exercicios.objects.filter(fk_ficha_id=ficha_id).delete()
         fichas_treino.objects.filter(id=ficha_id).delete()
 
         messages.success(request, "FICHA DELETADA COM SUCESSO")
@@ -562,13 +498,35 @@ def deletar_ficha(request, aluno_id, ficha_id):
 
 
 
-# ------------------FUNCIONALIDADES DA RECEPÇÃO-----------------#
+# ------------------ RECEPÇÃO -----------------#
 
 
 
 
+# PÁGINA PRINCIPAL DA RECEPCIONISTA
+def home_recepcionista(request):
+    if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
+        return redirect('tela_login_fun')
+    
+    nome_funcionario = request.session['nome']
+    busca = request.GET.get('search')
+
+    if busca:
+        alunos_list = alunos.objects.filter(nome__icontains=busca)
+    else:
+        alunos_list = alunos.objects.all()
+
+    return render(request, 'recepcionista/home.html', {
+        'Alunos': alunos_list, 
+        'nome_funcionario': nome_funcionario
+    })
 
 
+
+
+# PÁGINA PARA CADASTRAR ALUNOS
+def cadastro_aluno(request):
+    return render(request, "recepcionista/cadastro_aluno.html")
 
 
 
@@ -597,6 +555,8 @@ def cadastrar_aluno(request):
             messages.error(request, "TELEFONE INVÁLIDO")
             return redirect('tela_cadastro')
         
+
+
         alunos.objects.create(nome=nome,cpf=cpf,sexo=sexo,data_nascimento=data_formatada, telefone=telefone)
         messages.success(request, "CADASTRADO COM SUCESSO")
         return redirect('tela_cadastro')
@@ -604,9 +564,6 @@ def cadastrar_aluno(request):
     except Exception:
         messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
         return redirect('tela_cadastro')
-
-
-
 
 
 
@@ -638,7 +595,6 @@ def deletar_aluno(request, aluno_id):
 
 
 
-
 # ROTA PARA ATUALIZAR INFORMAÇÕES DO ALUNO
 def editar_aluno(request, aluno_id):
     if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
@@ -650,17 +606,19 @@ def editar_aluno(request, aluno_id):
         novo_cpf = re.sub(r'\D', '', request.POST.get('cpf', ''))
         novo_telefone = re.sub(r'\D', '', request.POST.get('tell', ''))
 
-        if not novo_nome or not novo_cpf or not novo_telefone:
+        if not novo_nome or not novo_telefone:
             messages.error(request, "PREENCHA TODOS OS CAMPOS")
-            return redirect('tela_cadastro')
+            return redirect('home_recepcionista')
         
-        if len(novo_cpf) != 11:
+        if len(novo_cpf) != 11 and novo_cpf:
             messages.error(request, "CPF INVÁLIDO")
-            return redirect('tela_cadastro')
+            return redirect('home_recepcionista')
+        elif not novo_cpf:
+            novo_cpf = aluno.cpf
 
         if len(novo_telefone) != 11:
             messages.error(request, "TELEFONE INVÁLIDO")
-            return redirect('tela_cadastro')
+            return redirect('home_recepcionista')
 
         aluno.nome = novo_nome
         aluno.cpf = novo_cpf
@@ -681,6 +639,93 @@ def editar_aluno(request, aluno_id):
 
 
 
+#página para cadastrar pagamento
+def page_pagamentos(request,aluno_id):
+    lista_pagamentos = pagamentos.objects.filter(fk_aluno_id=aluno_id).all()
+    nome_aluno = alunos.objects.filter(id=aluno_id).first()
+    return render(request, 'recepcionista/pagamentos.html', {'lista_pagamentos':lista_pagamentos, 'aluno_id': aluno_id, 'nome_aluno': nome_aluno.nome})
+
+
+
+
+
+#Rota para cadastrar pagamento da mensalidade
+def cadastrar_pagamento(request, aluno_id):
+    if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
+        return redirect('tela_login_fun')
+    
+    try:
+        forma_pagamento = request.POST.get('forma_pagamento')
+        valor = request.POST.get('valor', "").strip()
+        valor_decimal = Decimal(valor.replace(',','.'))
+
+        data_vencimento = datetime.today().date() + timedelta(days=30)
+        pagamentos.objects.create(forma_pagamento=forma_pagamento,valor=valor_decimal,data_vencimento=data_vencimento, fk_aluno_id=aluno_id)
+
+        messages.success(request,"PAGAMENTO FOI CADASTRADO")
+        return redirect('page_pagamentos', aluno_id) 
+    
+    except Exception:
+        messages.error(request,"OCORREU UM ERRO")
+        return redirect('page_pagamentos', aluno_id) 
+    except ValueError :
+        messages.error(request, "DADOS INVÁLIDOS")
+        return redirect('page_pagamentos', aluno_id) 
+        
+
+
+
+
+
+#rota para editar o pagamento de um aluno
+def editar_pagamento(request ,aluno_id ,pagamento_id):
+    if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
+        return redirect('tela_login_fun')
+    
+    try:
+        pagamento = get_object_or_404(pagamentos, id=pagamento_id)
+
+        nova_forma_pagamento = request.POST.get('forma_pagamento')
+        valor = request.POST.get('valor', "").strip()
+        novo_valor_decimal = Decimal(valor.replace(',','.'))
+
+        pagamento.forma_pagamento = nova_forma_pagamento
+        pagamento.valor = novo_valor_decimal
+        pagamento.save()
+
+        messages.success(request,"PAGAMENTO ATUALIZADO")
+        return redirect('page_pagamentos', aluno_id) 
+
+    except Exception:
+        messages.error(request,"OCORREU UM ERRO")
+        return redirect('page_pagamentos', aluno_id) 
+    
+    except ValueError:
+        messages.error(request,"DADOS INVÁLIDOS")
+        return redirect('page_pagamentos', aluno_id) 
+
+
+
+
+
+
+#rota para deletar pagamento de um aluno
+def deletar_pagamento(request,aluno_id ,pagamento_id):
+    if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
+        return redirect('tela_login_fun') 
+    
+    try:
+        pagamentos.objects.filter(id=pagamento_id).delete()
+
+        messages.success(request,"PAGAMENTO DELETADO")
+        return redirect('page_pagamentos', aluno_id)    
+    except Exception:
+        messages.error(request,"OCORREU UM ERRO")
+        return redirect('page_pagamentos', aluno_id)
+
+
+
+
 
 
 
@@ -690,11 +735,24 @@ def editar_aluno(request, aluno_id):
 
 
 
+# PÁGINA PRINCIPAL ADMINISTRADOR
+def home_administrador(request):
+    if not request.session.get("id") or request.session.get("cargo") != "administrador":
+        return redirect('tela_login_fun')
+    
+    nome_funcionario = request.session['nome']
+    lista_funcionarios = funcionarios.objects.exclude(cargo="administrador")
+
+    return render(request, 'adm/home.html', {
+        'nome_funcionario': nome_funcionario, 
+        'lista_funcionarios': lista_funcionarios
+    })
 
 
 
-
-
+# PÁGINA DE CADASTRO DE FUNCIONÁRIOS
+def cadastro_funcionarios(request):
+    return render(request, 'adm/cadastro_funcionarios.html')
 
 
 # CADASTRAR FUNCIONARIO
