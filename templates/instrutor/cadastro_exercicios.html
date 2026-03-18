@@ -16,7 +16,8 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-end p-4">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
+            <h2 class="m-0">CADASTRO DE EXERCÍCIOS</h2>
             <ul class="m-0 d-flex gap-2">
                 <li><a href="{% url 'home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
             </ul>
@@ -72,10 +73,10 @@
                         <form action="{% url 'editar_exercicio' exercicio.id %}" method="POST">
                             {% csrf_token %}
                             <div class="d-flex align-items-center gap-2">
-                                <label class="form-label fw-semibold">Nome:</label>
+                                <label class="form-label fw-semibold m-0">Nome:</label>
                                 <input type="text" class="form-control" name="nome" value="{{ exercicio.nome }}" style="width: 25%;" required>
 
-                                <label class="form-label fw-semibold">Grupo Muscular:</label>
+                                <label class="form-label fw-semibold m-0">Grupo Muscular:</label>
                                 <select name="grupo_muscular" class="form-select" style="width: 25%;" required>
                                     <option value="Membros Superiores" {% if exercicio.grupo_muscular == 'Membros Superiores' %}selected{% endif %}>
                                         Membros Superiores
@@ -89,7 +90,7 @@
                                 </select>
 
                                 <div class="d-flex gap-2"> 
-                                    <button type="submit" class="btn btn-primary">EDITAR EXERCÍCIO</button>
+                                    <button type="submit" class="btn btn-primary" onclick="return confirm('Tem certeza que deseja editar este exercício?')">EDITAR EXERCÍCIO</button>
                                     <a href="{% url 'deletar_exercicio' exercicio.id %}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar este exercício?')">DELETAR</a>
                                 </div>
                             </div>
@@ -97,7 +98,7 @@
                     </li>
                 </ul>       
             {% empty %}
-                <p class="text-center">Nenhum exercício cadastrado ainda.</p>
+                <p class="text-center">NENHUM EXERCÍCIO CADASTRADO</p>
             {% endfor %}
             </div>
         </div>

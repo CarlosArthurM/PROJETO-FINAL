@@ -74,7 +74,7 @@
                                         <form action="{% url 'deletar_treino' item.aluno.id %}" method="POST">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar a ficha de treino deste aluno?')">
-                                                Deletar Ficha de Treino
+                                                Deletar Fichas de Treino
                                             </button>
                                         </form>
                                     {% endif %}
@@ -83,7 +83,7 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p class="text-center">Você ainda não possui alunos</p>
+                    <p class="text-center">NENHUM ALUNO CADASTRADO</p>
                 {% endif %}
             </div>
         </div>

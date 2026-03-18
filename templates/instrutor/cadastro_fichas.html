@@ -134,12 +134,11 @@
 
         });
 
-        setTimeout(() => {
-            const alerts = document.querySelectorAll(".alert");
-            alerts.forEach(alert => {
-                alert.style.display = "none";
-            });
-        }, 5000);
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
     </script>
 
 </body>

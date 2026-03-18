@@ -74,11 +74,26 @@
                         <form action="{% url 'editar_ficha' aluno_id item.ficha.id %}" method="POST">
                             {% csrf_token %}
                             <div class="card-header bg-gradient bg-primary-subtle text-primary fw-bold">
-                                Ficha {{ item.ficha.grupo }}
-                                <small class="float-end text-muted">{{ item.ficha.nivel }}</small>
+                                <div>
+                                    Ficha {{ item.ficha.grupo }}
+                                    <small class="float-end text-muted ">{{ item.ficha.nivel }}</small> 
+                                </div>
+                                <small>Criado em {{item.ficha.data_criacao|date:'d/m/Y'}}</small> 
                             </div>
 
+
                             <div class="card-body">
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Divisão</label>
+                                    <select class="form-select" name="grupo">
+                                        <option value="ABC" {% if item.ficha.divisao == "ABC" %}selected{% endif %}>ABC</option>
+                                        <option value="ABCD" {% if item.ficha.divisao == "ABCD" %}selected{% endif %}>ABCD</option>
+                                        <option value="ABCDE" {% if item.ficha.divisao == "ABCDE" %}selected{% endif %}>ABCDE</option>
+                                        <option value="FULL BODY" {% if item.ficha.divisao == "FULL BODY" %}selected{% endif %}>FULL BODY</option>
+                                    </select>
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Grupo</label>
                                     <select class="form-select" name="grupo">
@@ -166,12 +181,11 @@
             botao.closest('.list-group-item').remove();
         }
 
-        setTimeout(function() {
-            const alerts = document.querySelectorAll(".alert");
-            alerts.forEach(alert => {
-                alert.style.display = "none";
-            });
-        }, 5000);
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
     </script>
 </body>
 </html>

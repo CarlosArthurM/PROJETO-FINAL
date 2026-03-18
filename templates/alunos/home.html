@@ -34,7 +34,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">BEM VINDO(A), {{ nome.split.0 }}</h2>
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'logout' %}" class="btn">Sair</a></li>
+                <li><a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a></li>
             </ul>
         </nav>
     </header>
@@ -67,7 +67,7 @@
             </div>
             {%endfor%}
             {% else %}
-            <p>Você ainda não possui fichas de treino.</p>
+            <p class="text-center">VOCÊ AINDA NÃO POSSUI FICHAS DE TREINO</p>
             {% endif %}
         </div>
     </div>
