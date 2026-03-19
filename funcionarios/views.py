@@ -458,6 +458,9 @@ def editar_aluno(request, aluno_id):
         if len(novo_cpf) != 11 and novo_cpf:
             messages.error(request, "CPF INVÁLIDO")
             return redirect('funcionarios:home_recepcionista')
+        elif not novo_cpf:
+            novo_cpf = aluno.cpf
+
 
         if len(novo_telefone) != 11:
             messages.error(request, "TELEFONE INVÁLIDO")
