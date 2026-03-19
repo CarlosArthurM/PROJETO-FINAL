@@ -1,8 +1,8 @@
-# SISTEMA DE GERENCIAMENTO DE ACADEMIA
+# SISTEMA DE GERENCIAMENTO DE ACADEMIA 
 
 Este sistema foi feito para academias de bairro que precisam de um gerenciamento de funcionários e alunos.
 
-## o sistema tem as seguintes funcionalidades:
+## O sistema tem as seguintes funcionalidades:
 
 ### Funcionalidades do Administrador:
 * Gerenciamento de funcionários (instrutores e recepcionistas), podendo cadastrar, atualizar dados e deletar o funcionário.
@@ -13,3 +13,4 @@ Este sistema foi feito para academias de bairro que precisam de um gerenciamento
 
 ### Funcionalidades da Recepcionista:
 * Gerenciamento de Alunos, podendo cadastrar, atualizar dados do aluno  e deletar o aluno.
+* Gerenciamento de Pagamentos, podendo cadastrar, atualizar e deletar o pagamento.
