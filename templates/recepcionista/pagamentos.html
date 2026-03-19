@@ -19,7 +19,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">PAGAMENTOS DE {{nome_aluno}}</h2>
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'home_recepcionista' %}" class="btn btn-outline-danger">Voltar</a></li>
+                <li><a href="{% url 'funcionarios:home_recepcionista' %}" class="btn btn-outline-danger">Voltar</a></li>
             </ul>
         </nav>
     </header>
@@ -36,7 +36,7 @@
 
     <main>
         <div class="container d-flex justify-content-center" style="position: relative; top: 90px;">
-            <form action="{% url 'cadastrar_pagamento' aluno_id %}" method="POST">
+            <form action="{% url 'funcionarios:cadastrar_pagamento' aluno_id %}" method="POST">
                 {% csrf_token %}
                 <div>
                     <label class="form-label fw-semibold">Forma de Pagamento</label>
@@ -66,7 +66,7 @@
             {% for pagamento in lista_pagamentos %}
                 <ul>
                     <li>
-                        <form action="{% url 'editar_pagamento' aluno_id pagamento.id %}" method="POST">
+                        <form action="{% url 'funcionarios:editar_pagamento' aluno_id pagamento.id %}" method="POST">
                             {% csrf_token %}
                             <div class="d-flex align-items-center gap-2">
 
@@ -83,7 +83,7 @@
 
                                 <div class="d-flex gap-2"> 
                                     <button type="submit" class="btn btn-primary" onclick="return confirm('Tem certeza que deseja editar este pagamento?')">EDITAR PAGAMENTO</button>
-                                    <a href="{% url 'deletar_pagamento' aluno_id pagamento.id %}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar este pagamento?')">DELETAR</a>
+                                    <a href="{% url 'funcionarios:deletar_pagamento' aluno_id pagamento.id %}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar este pagamento?')">DELETAR</a>
                                 </div>
                             </div>
                         </form>

@@ -19,7 +19,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">BEM VINDO(A), {{ nome_funcionario.split.0 }}</h2>
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'tela_cadastro' %}" class="btn">Cadastrar Aluno</a></li>
+                <li><a href="{% url 'funcionarios:tela_cadastro' %}" class="btn">Cadastrar Aluno</a></li>
                 <li><a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a></li>
             </ul>
         </nav>
@@ -40,7 +40,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <h4>ALUNOS:</h4>
                 <div>
-                    <form method="GET" action="{% url 'home_recepcionista' %}">
+                    <form method="GET" action="{% url 'funcionarios:home_recepcionista' %}">
                         <input type="text" name="search" class="form-control" placeholder="Digite para buscar..." value="{{ request.GET.search }}">
                     </form>
                 </div>
@@ -53,7 +53,7 @@
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3 mt-4">
                             <div class="card p-2">
                                 <ul class="mb-2 p-0">
-                                    <form action="{% url 'editar_aluno' aluno.id %}" method="POST">
+                                    <form action="{% url 'funcionarios:editar_aluno' aluno.id %}" method="POST">
                                         {% csrf_token %}
                                         <li>
                                             <label class="form-label fw-semibold">Nome Completo:</label>
@@ -93,12 +93,12 @@
                                         </div>
                                         
                                         <div class="mt-2">
-                                            <a href="{% url 'page_pagamentos' aluno.id %}" type="button" class="btn btn-primary" style="width: 100%;">Administrar Pagamento</a>
+                                            <a href="{% url 'funcionarios:page_pagamentos' aluno.id %}" type="button" class="btn btn-primary" style="width: 100%;">Administrar Pagamentos</a>
                                         </div>
                                     </form>
                                 </ul>
                                 
-                                <form action="{% url 'deletar_aluno' aluno.id %}" method="POST">
+                                <form action="{% url 'funcionarios:deletar_aluno' aluno.id %}" method="POST">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este aluno?')">
                                         Deletar Aluno

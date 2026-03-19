@@ -15,7 +15,7 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-end p-4">
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'home_administrador' %}" class="btn btn-outline-danger">Voltar</a></li>
+                <li><a href="{% url 'funcionarios:home_administrador' %}" class="btn btn-outline-danger">Voltar</a></li>
             </ul>
         </nav>
     </header>
@@ -35,7 +35,7 @@
         <div class="container" style="position: relative; top: 90px;">
             <div class="row justify-content-center">
                 <div class="col-4" >
-                    <form action="{% url 'cadastrar_funcionario' %}" method="POST">
+                    <form action="{% url 'funcionarios:cadastrar_funcionario' %}" method="POST">
                         {% csrf_token %}
                         
                         <label class="form-label fw-semibold">Nome Completo:</label>

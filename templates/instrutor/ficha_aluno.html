@@ -19,8 +19,8 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">FICHAS DE {{nome_aluno}}</h2>
             <ul class="m-0 d-flex gap-2">
-                <a href="{% url 'cadastro_fichas' aluno_id %}" class="btn">Cadastrar Ficha de Treino</a>
-                <li><a href="{% url 'home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
+                <a href="{% url 'funcionarios:cadastro_fichas' aluno_id %}" class="btn">Cadastrar Ficha de Treino</a>
+                <li><a href="{% url 'funcionarios:home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
             </ul>
         </nav>
     </header>
@@ -42,7 +42,7 @@
                 <div class="modal fade" id="modal{{ item.ficha.id }}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{% url 'adicionar_exercicio' aluno_id item.ficha.id %}" method="POST">
+                            <form action="{% url 'funcionarios:adicionar_exercicio' aluno_id item.ficha.id %}" method="POST">
                                 {% csrf_token %}
                                 <div class="modal-body">
                                     <label class="form-label fw-semibold">Exercício</label>
@@ -71,7 +71,7 @@
 
                 <div class="col-12 col-md-6 g-4">
                     <div class="card shadow border-0">
-                        <form action="{% url 'editar_ficha' aluno_id item.ficha.id %}" method="POST">
+                        <form action="{% url 'funcionarios:editar_ficha' aluno_id item.ficha.id %}" method="POST">
                             {% csrf_token %}
                             <div class="card-header bg-gradient bg-primary-subtle text-primary fw-bold">
                                 <div>
@@ -155,7 +155,7 @@
                                 <button type="submit" class="btn btn-success btn-sm px-4">Salvar Alterações</button>
                         </form>
 
-                        <form action="{% url 'deletar_ficha' aluno_id item.ficha.id %}" method="POST" class="d-inline">
+                        <form action="{% url 'funcionarios:deletar_ficha' aluno_id item.ficha.id %}" method="POST" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm px-4" onclick="return confirm('Tem certeza que deseja deletar esta ficha?')">
                                 Deletar Ficha
@@ -167,7 +167,7 @@
             {% empty %}
                 <div class="col-12 text-center py-5">
                     <h4>Nenhuma ficha de treino cadastrada para este aluno</h4>
-                    <a href="{% url 'cadastro_fichas' aluno_id %}" class="btn btn-primary mt-3">Cadastrar Primeira Ficha</a>
+                    <a href="{% url 'funcionarios:cadastro_fichas' aluno_id %}" class="btn btn-primary mt-3">Cadastrar Primeira Ficha</a>
                 </div>
             {% endfor %}
         </div>

@@ -19,7 +19,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">BEM VINDO(A), {{ nome_funcionario.split.0 }}</h2>
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'cadastro_funcionarios' %}" class="btn">Cadastrar Funcionário</a></li>
+                <li><a href="{% url 'funcionarios:cadastro_funcionarios' %}" class="btn">Cadastrar Funcionário</a></li>
                 <li><a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a></li>
             </ul>
         </nav>
@@ -44,7 +44,7 @@
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <div class="card p-2">
                                 <ul class="mb-2 p-0">
-                                    <form action="{% url 'editar_funcionario' funcionario.id %}" method="POST">
+                                    <form action="{% url 'funcionarios:editar_funcionario' funcionario.id %}" method="POST">
                                         {% csrf_token %}
                                         <li>
                                             <label class="form-label fw-semibold">Funcionario:</label>
@@ -52,8 +52,8 @@
                                         </li>
 
                                         <li>
-                                            <label class="form-label fw-semibold">CPF:</label>
-                                            <input type="text" class="cpf form-control" value="{{ funcionario.cpf }}" name="cpf">
+                                            <label class="form-label fw-semibold">CPF(Digite apenas se quiser redefinir):</label>
+                                            <input type="text" class="cpf form-control" name="cpf" placeholder="XXX.XXX.XXX-XX">
                                         </li>
 
                                         <li>
@@ -73,13 +73,13 @@
                                         </li>
 
                                         <div class="mt-4">
-                                            <button type="submit" class="btn btn-primary" style="width: 100%;">Editar Funcionário</button>
+                                            <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="return confirm('Tem certeza que deseja editar este funcionário?')">Editar Funcionário</button>
                                         </div>
                                     </form>
                                 </ul>
 
                                 <div class="d-flex flex-column">
-                                    <form action="{% url 'deletar_funcionario' funcionario.id %}" method="POST">
+                                    <form action="{% url 'funcionarios:deletar_funcionario' funcionario.id %}" method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este funcionário?')">Deletar Funcionário</button>
                                     </form>

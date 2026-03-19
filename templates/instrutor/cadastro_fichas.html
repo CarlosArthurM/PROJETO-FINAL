@@ -18,8 +18,8 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-end p-4">
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'cadastro_exercicios' %}"></a></li>
-                <li><a href="{% url 'home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
+                <li><a href="{% url 'funcionarios:cadastro_exercicios' %}"></a></li>
+                <li><a href="{% url 'funcionarios:home_instrutor' %}" class="btn btn-outline-danger">Voltar</a></li>
             </ul>
         </nav>
     </header>
@@ -37,7 +37,7 @@
     <div class="container py-5">
         <h2 class="mb-4 fw-bold">Cadastrar Ficha de Treino</h2>
 
-        <form action="{% url 'cadastrar_treino' aluno_id %}" method="POST">
+        <form action="{% url 'funcionarios:cadastrar_treino' aluno_id %}" method="POST">
             {% csrf_token %}
 
             <div class="card shadow-sm p-4 mb-4">

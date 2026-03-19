@@ -1,4 +1,4 @@
-# GymManager
+# SISTEMA DE GERENCIAMENTO DE ACADEMIA
 
 Este sistema foi feito para academias de bairro que precisam de um gerenciamento de funcionários e alunos.
 

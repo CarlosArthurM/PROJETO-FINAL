@@ -19,7 +19,7 @@
         <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex justify-content-between p-4">
             <h2 style="text-transform: uppercase; margin: 0;">BEM VINDO(A), {{ nome_funcionario.split.0 }}</h2>
             <ul class="m-0 d-flex gap-2">
-                <li><a href="{% url 'cadastro_exercicios' %}" class="btn">Cadastrar Exercicios</a></li>
+                <li><a href="{% url 'funcionarios:cadastro_exercicios' %}" class="btn">Cadastrar Exercicios</a></li>
                 <li><a href="{% url 'logout' %}" class="btn btn-outline-danger">Sair</a></li>
             </ul>
         </nav>
@@ -41,7 +41,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <h4>ALUNOS</h4>
                 <div>
-                    <form method="GET" action="{% url 'home_instrutor' %}">
+                    <form method="GET" action="{% url 'funcionarios:home_instrutor' %}">
                         <input type="text" name="search" class="form-control" placeholder="Digite para buscar..." value="{{ request.GET.search }}">
                     </form>
                 </div>
@@ -68,10 +68,10 @@
 
                                 <div class="d-flex flex-column gap-2">
                                     {% if not item.ficha %}
-                                        <a href="{% url 'cadastro_fichas' item.aluno.id %}" class="btn btn-primary">Cadastrar Ficha de Treino</a>
+                                        <a href="{% url 'funcionarios:cadastro_fichas' item.aluno.id %}" class="btn btn-primary">Cadastrar Ficha de Treino</a>
                                     {% else %}
-                                        <a href="{% url 'fichas_aluno' item.aluno.id %}" class="btn btn-primary">Visualizar Ficha de Treino</a>
-                                        <form action="{% url 'deletar_treino' item.aluno.id %}" method="POST">
+                                        <a href="{% url 'funcionarios:fichas_aluno' item.aluno.id %}" class="btn btn-primary">Visualizar Ficha de Treino</a>
+                                        <form action="{% url 'funcionarios:deletar_treino' item.aluno.id %}" method="POST">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar a ficha de treino deste aluno?')">
                                                 Deletar Fichas de Treino
