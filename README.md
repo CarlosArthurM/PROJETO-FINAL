@@ -1,6 +1,6 @@
 # SISTEMA DE GERENCIAMENTO DE ACADEMIA 
 
-Este sistema foi feito para academias de bairro que precisam de um gerenciamento de funcionários e alunos.
+Este sistema foi feito para academias que precisam de um gerenciamento fácil, rápido e simples de funcionários e alunos.
 
 ## O sistema tem as seguintes funcionalidades:
 
