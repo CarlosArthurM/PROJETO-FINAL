@@ -98,12 +98,7 @@
                                     </form>
                                 </ul>
                                 
-                                <form action="{% url 'funcionarios:deletar_aluno' aluno.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este aluno?')">
-                                        Deletar Aluno
-                                    </button>
-                                </form>
+                                <a href="{% url 'funcionarios:deletar_aluno' aluno.id %}" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar este pagamento?')">Deletar Aluno</a>
                             </div>
                         </div>
                     {% endfor %}

@@ -155,13 +155,8 @@
                                 <button type="submit" class="btn btn-success btn-sm px-4">Salvar Alterações</button>
                         </form>
 
-                        <form action="{% url 'funcionarios:deletar_ficha' aluno_id item.ficha.id %}" method="POST" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm px-4" onclick="return confirm('Tem certeza que deseja deletar esta ficha?')">
-                                Deletar Ficha
-                            </button>
-                        </form>
-                            </div>
+                            <a href="{% url 'funcionarios:deletar_ficha' aluno_id item.ficha.id %}" class="btn btn-danger btn-sm px-4" onclick="return confirm('Tem certeza que deseja deletar esta ficha?')">Deletar Ficha</a>
+                        </div>
                     </div>
                 </div>
             {% empty %}

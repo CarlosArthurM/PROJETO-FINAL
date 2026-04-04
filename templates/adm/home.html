@@ -79,10 +79,7 @@
                                 </ul>
 
                                 <div class="d-flex flex-column">
-                                    <form action="{% url 'funcionarios:deletar_funcionario' funcionario.id %}" method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este funcionário?')">Deletar Funcionário</button>
-                                    </form>
+                                    <a href="{% url 'funcionarios:deletar_funcionario' funcionario.id %}" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar este funcionário?')">Deletar Funcionário</a>
                                 </div>
                             </div>
                         </div>

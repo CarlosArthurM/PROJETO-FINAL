@@ -46,7 +46,7 @@
                     </form>
                 </div>
              </div>
-            <div class="row gap-2" style="position: relative; top: 20px; height: 60vh; overflow-y: auto;">
+            <div class="row g-3 mt-3" style="max-height: 70vh; overflow-y: auto;">
                 {% if lista_completa %}
                     {% for item in lista_completa %}
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
@@ -71,12 +71,8 @@
                                         <a href="{% url 'funcionarios:cadastro_fichas' item.aluno.id %}" class="btn btn-primary">Cadastrar Ficha de Treino</a>
                                     {% else %}
                                         <a href="{% url 'funcionarios:fichas_aluno' item.aluno.id %}" class="btn btn-primary">Visualizar Ficha de Treino</a>
-                                        <form action="{% url 'funcionarios:deletar_treino' item.aluno.id %}" method="POST">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja deletar a ficha de treino deste aluno?')">
-                                                Deletar Fichas de Treino
-                                            </button>
-                                        </form>
+                                        
+                                        <a href="{% url 'funcionarios:deletar_treino' item.aluno.id %}" class="btn btn-danger" style="width: 100%;"  onclick="return confirm('Tem certeza que deseja deletar a ficha de treino deste aluno?')">Deletar Fichas de Treino</a>
                                     {% endif %}
                                 </div>
                             </div>
