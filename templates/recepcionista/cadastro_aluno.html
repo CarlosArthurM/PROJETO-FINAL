@@ -41,23 +41,19 @@
                         {% csrf_token %}
 
                         <label class="form-label fw-semibold">Nome Completo:</label>
-                        <input type="text" class="form-control" name="nome" placeholder="Nome completo" required>
+                        {{ form.nome }}
 
                         <label class="form-label fw-semibold">Telefone:</label>
-                        <input type="text" class="form-control" id="tell" name="tell" placeholder="Telefone" required>
+                        {{ form.telefone }}
 
                         <label class="form-label fw-semibold">CPF:</label>
-                        <input type="text" class="form-control" id="cpf" name="cpf" placeholder="CPF" required>
+                        {{ form.cpf }}
 
                         <label class="form-label fw-semibold">Sexo:</label>
-                        <select name="sexo" id="sexo" class="form-select" required>
-                            <option value="M">Masculino</option>
-                            <option value="F">Feminino</option>
-                        </select>
+                        {{ form.sexo }}
                         
                         <label class="form-label fw-semibold">Data de Nascimento:</label>
-                        <input type="date" class="form-control" name="data_nascimento" required>
-
+                        {{ form.data_nascimento }}
                         <div class="d-flex justify-content-center mt-4">
                             <button class="btn btn-primary" type="submit">Cadastrar Aluno</button>
                         </div>
@@ -73,8 +69,8 @@
     
     <script>
         $(document).ready(function() {
-            $('#tell').mask('(00) 00000-0000');
-            $('#cpf').mask('000.000.000-00', {reverse: true});
+            $('.tell').mask('(00) 00000-0000');
+            $('.cpf').mask('000.000.000-00', {reverse: true});
         });
 
         $(document).ready(function() {

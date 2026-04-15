@@ -1,11 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from datetime import datetime, timedelta
-import re
 from .models import alunos, funcionarios, exercicios, fichas_treino, listas_exercicios, pagamentos
-from decimal import Decimal
-
-
+from .forms import PagamentoForm, AlunoForm, FuncionarioForm
 
 # ------------------- INSTRUTOR --------------------#
 
@@ -45,8 +42,6 @@ def home_instrutor(request):
         'lista_completa': lista_completa, 
         'nome_funcionario': nome_funcionario
     })
-
-
 
 
 
@@ -393,7 +388,8 @@ def home_recepcionista(request):
 
 # PÁGINA PARA CADASTRAR ALUNOS
 def cadastro_aluno(request):
-    return render(request, "recepcionista/cadastro_aluno.html")
+    form = AlunoForm()
+    return render(request, "recepcionista/cadastro_aluno.html", {"form": form})
 
 
 
@@ -403,45 +399,16 @@ def cadastrar_aluno(request):
         return redirect('tela_login_fun')
     
     if request.method == 'POST':
-        try:
-            nome = request.POST.get('nome')
-            cpf = re.sub(r'\D', '', request.POST.get('cpf', ''))
-            telefone = re.sub(r'\D', '', request.POST.get('tell', ''))
-            sexo = request.POST.get('sexo')
-            data_nascimento = request.POST.get('data_nascimento')
-            data_formatada = datetime.strptime(data_nascimento, "%Y-%m-%d").date()
+        form = AlunoForm(request.POST)
 
-            if not nome or not cpf or not telefone:
-                messages.error(request, "PREENCHA TODOS OS CAMPOS")
-                return redirect('funcionarios:tela_cadastro')
-            
-            if len(nome) < 3:
-                messages.error(request, "NOME MUITO CURTO") 
-                return redirect('funcionarios:tela_cadastro')
-            
-            if len(cpf) != 11:
-                messages.error(request, "CPF INVÁLIDO")
-                return redirect('funcionarios:tela_cadastro')
-
-            if len(telefone) != 11:
-                messages.error(request, "TELEFONE INVÁLIDO")
-                return redirect('funcionarios:tela_cadastro')
-            
-
-            alunos.objects.create(nome=nome,cpf=cpf,sexo=sexo,data_nascimento=data_formatada, telefone=telefone)
+        if form.is_valid():
+            form.save()
             messages.success(request, "CADASTRADO COM SUCESSO")
-            return redirect('funcionarios:tela_cadastro')
-            
-        except Exception:
-            messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
-            return redirect('funcionarios:tela_cadastro')
+        else:
+            for erro in form.errors.values():
+                messages.error(request, erro[0])
         
     return redirect('funcionarios:tela_cadastro')
-
-
-
-
-
 
 
 
@@ -467,54 +434,27 @@ def deletar_aluno(request, aluno_id):
 
 
 
-
-
-
 # ROTA PARA ATUALIZAR INFORMAÇÕES DO ALUNO
 def editar_aluno(request, aluno_id):
     if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
         return redirect('tela_login_fun')
 
     if request.method == 'POST':
-        try:
-            aluno = get_object_or_404(alunos, id=aluno_id)
-            novo_nome = request.POST.get('nome')
-            novo_cpf = re.sub(r'\D', '', request.POST.get('cpf', ''))
-            novo_telefone = re.sub(r'\D', '', request.POST.get('tell', ''))
 
-            if not novo_nome or not novo_telefone:
-                messages.error(request, "PREENCHA TODOS OS CAMPOS")
-                return redirect('funcionarios:home_recepcionista')
-            
-            if len(novo_nome) < 3:
-                messages.error(request, "NOME MUITO CURTO") 
-                return redirect('funcionarios:home_recepcionista')
-            
-            if len(novo_cpf) != 11 and novo_cpf:
-                messages.error(request, "CPF INVÁLIDO")
-                return redirect('funcionarios:home_recepcionista')
-            elif not novo_cpf:
-                novo_cpf = aluno.cpf
+        aluno = get_object_or_404(alunos, id=aluno_id)
+        dados = request.POST.copy()
+        
+        if not dados.get('cpf'):
+            dados['cpf'] = aluno.cpf
 
+        form = AlunoForm(dados, instance=aluno)
 
-            if len(novo_telefone) != 11:
-                messages.error(request, "TELEFONE INVÁLIDO")
-                return redirect('funcionarios:home_recepcionista')
-
-            aluno.nome = novo_nome
-            aluno.cpf = novo_cpf
-            aluno.telefone = novo_telefone
-            aluno.sexo = request.POST.get('sexo')
-            data = request.POST.get('data_nascimento')
-            aluno.data_nascimento = datetime.strptime(data, "%Y-%m-%d").date()
-
-            aluno.save()
+        if form.is_valid():
+            form.save()
             messages.success(request, "DADOS DO ALUNO ATUALIZADO COM SUCESSO")
-            return redirect('funcionarios:home_recepcionista')
-            
-        except Exception:
-            messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
-            return redirect('funcionarios:home_recepcionista')
+        else:
+            for erro in form.errors.values():
+                messages.error(request, erro[0])
         
     return redirect('funcionarios:home_recepcionista')
 
@@ -525,13 +465,15 @@ def editar_aluno(request, aluno_id):
 def page_pagamentos(request,aluno_id):
     lista_pagamentos = pagamentos.objects.filter(fk_aluno_id=aluno_id).all()
     nome_aluno = alunos.objects.filter(id=aluno_id).first()
+
+    form = PagamentoForm()
     
     return render(request, 'recepcionista/pagamentos.html', {
         'lista_pagamentos':lista_pagamentos, 
         'aluno_id': aluno_id, 
-        'nome_aluno': nome_aluno.nome
+        'nome_aluno': nome_aluno.nome,
+        'form': form
     })
-
 
 
 
@@ -541,26 +483,24 @@ def cadastrar_pagamento(request, aluno_id):
         return redirect('tela_login_fun')
     
     if request.method == 'POST':
-        try:
-            forma_pagamento = request.POST.get('forma_pagamento')
-            valor = request.POST.get('valor', "").strip()
-            valor_decimal = Decimal(valor.replace(',','.'))
 
-            data_vencimento = datetime.today().date() + timedelta(days=30)
-            pagamentos.objects.create(forma_pagamento=forma_pagamento,valor=valor_decimal,data_vencimento=data_vencimento, fk_aluno_id=aluno_id)
+        form = PagamentoForm(request.POST)
+        
+        if form.is_valid():
+            pagamento = form.save(commit=False)
 
+            pagamento.fk_aluno_id = aluno_id
+            pagamento.data_vencimento = datetime.today().date() + timedelta(days=30)
+
+            pagamento.save()
             messages.success(request,"PAGAMENTO FOI CADASTRADO")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
-        
-        except ValueError :
-            messages.error(request, "DADOS INVÁLIDOS")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
-        except Exception:
-            messages.error(request,"OCORREU UM ERRO")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
+            
+        else:
+            for erro in form.errors.values():
+                messages.error(request,erro[0])
 
+        return redirect('funcionarios:page_pagamentos', aluno_id) 
         
-
 
 
 
@@ -570,36 +510,20 @@ def editar_pagamento(request ,aluno_id ,pagamento_id):
     if not request.session.get("id") or request.session.get("cargo") != "recepcionista":
         return redirect('tela_login_fun')
     
-
     if request.method == 'POST':
-        try:
-            pagamento = get_object_or_404(pagamentos, id=pagamento_id)
+        pagamento = get_object_or_404(pagamentos, id=pagamento_id)
+        form = PagamentoForm(request.POST ,instance=pagamento)
 
-            nova_forma_pagamento = request.POST.get('forma_pagamento')
-            valor = request.POST.get('valor', "").strip()
-            novo_valor_decimal = Decimal(valor.replace(',','.'))
-
-            pagamento.forma_pagamento = nova_forma_pagamento
-            pagamento.valor = novo_valor_decimal
-            pagamento.save()
-
+        if form.is_valid():
+            form.save()
             messages.success(request,"PAGAMENTO ATUALIZADO")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
+        else:
+            for erro in form.errors.values():
+                messages.error(request, erro[0])
 
+        return redirect('funcionarios:page_pagamentos', aluno_id) 
 
-        except ValueError:
-            messages.error(request,"DADOS INVÁLIDOS")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
-
-        except Exception:
-            messages.error(request,"OCORREU UM ERRO")
-            return redirect('funcionarios:page_pagamentos', aluno_id) 
     
-
-
-
-
-
 
 
 #rota para deletar pagamento de um aluno
@@ -624,7 +548,6 @@ def deletar_pagamento(request,aluno_id ,pagamento_id):
 
 
 
-
 # -------------------FUNÇÕES DO ADMINISTRADOR---------------------#
 
 
@@ -636,14 +559,16 @@ def home_administrador(request):
     
     nome_funcionario = request.session['nome']
     lista_funcionarios = funcionarios.objects.exclude(cargo="administrador")
-
     return render(request, 'adm/home.html', {'nome_funcionario': nome_funcionario, 'lista_funcionarios': lista_funcionarios})
+
 
 
 
 # PÁGINA DE CADASTRO DE FUNCIONÁRIOS
 def cadastro_funcionarios(request):
-    return render(request, 'adm/cadastro_funcionarios.html')
+    form = FuncionarioForm()
+    return render(request, 'adm/cadastro_funcionarios.html',{'form': form})
+
 
 
 # CADASTRAR FUNCIONARIO
@@ -652,39 +577,16 @@ def cadastrar_funcionario(request):
         return redirect('tela_login_fun')
     
     if request.method == 'POST':
-        try:
-            nome = request.POST.get('nome')
-            cpf = re.sub(r'\D', '', request.POST.get('cpf', ''))
-            cargo = request.POST.get('cargo')
-            turno = request.POST.get('turno')
+        form = FuncionarioForm(request.POST)
 
-            if not nome or not cpf:
-                messages.error(request, "PREENCHA TODOS OS DADOS")
-                return redirect('funcionarios:cadastro_funcionarios')
-            
-            if len(nome) < 3:
-                messages.error(request, "NOME MUITO CURTO") 
-                return redirect('funcionarios:cadastro_funcionarios')
-            
-            if len(cpf) != 11:
-                messages.error(request, "CPF INVÁLIDO")
-                return redirect('funcionarios:home_recepcionista')
-                
-            funcionarios.objects.create(nome=nome, cpf=cpf, cargo=cargo, turno=turno)
+        if form.is_valid():
+            form.save()
             messages.success(request, "FUNCIONÁRIO CADASTRADO COM SUCESSO")
-            return redirect('funcionarios:cadastro_funcionarios')
+        else:
+            for erro in form.errors.values():
+                messages.error(request, erro[0])
 
-
-        except ValueError:
-            messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
-            return redirect('funcionarios:cadastro_funcionarios')
-        
-        except Exception:
-            messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
-            return redirect('funcionarios:cadastro_funcionarios')
-        
     return redirect('funcionarios:cadastro_funcionarios')
-
 
 
 
@@ -696,41 +598,22 @@ def editar_funcionario(request, funcionario_id):
         return redirect('tela_login_fun')
     
     if request.method == 'POST':
-        try:
-            funcionario = get_object_or_404(funcionarios, id=funcionario_id)
-            novo_nome = request.POST.get('nome')
-            novo_cpf = re.sub(r'\D', '', request.POST.get('cpf', ''))
+        funcionario = get_object_or_404(funcionarios, id=funcionario_id)
+        dados = request.POST.copy()
 
-            if not novo_nome:
-                messages.error(request, "PREENCHA TODOS OS CAMPOS")
-                return redirect('funcionarios:home_administrador')
-            
-            if len(novo_nome) < 3:
-                messages.error(request, "NOME MUITO CURTO") 
-                return redirect('funcionarios:cadastro_funcionarios')
-            
-            if len(novo_cpf) != 11 and novo_cpf:
-                messages.error(request, "CPF INVÁLIDO")
-                return redirect('funcionarios:home_administrador')
-            elif not novo_cpf:
-                novo_cpf = funcionario.cpf
+        if not dados.get('cpf'):
+            dados['cpf'] = funcionario.cpf
 
-            funcionario.nome = novo_nome
-            funcionario.cpf = novo_cpf
-            funcionario.cargo = request.POST.get('cargo')
-            funcionario.turno = request.POST.get('turno')
-            funcionario.save()
-            
+        form = FuncionarioForm(dados, instance=funcionario)
+
+        if form.is_valid():
+            form.save()
             messages.success(request, "FUNCIONÁRIO ATUALIZADO COM SUCESSO")
-            return redirect('funcionarios:home_administrador')
+        else:
+            for erro in form.errors.values():
+                messages.error(request,erro[0])
             
-        except ValueError:
-            messages.error(request, "OCORREU UM ERRO, VERIFIQUE OS DADOS INSERIDOS")
-            return redirect('funcionarios:home_administrador')
-    
     return redirect('funcionarios:home_administrador')
-
-
 
 
 

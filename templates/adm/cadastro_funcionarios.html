@@ -39,22 +39,16 @@
                         {% csrf_token %}
                         
                         <label class="form-label fw-semibold">Nome Completo:</label>
-                        <input type="text" class="form-control" name="nome" placeholder="Nome completo" required>
+                        {{ form.nome }}
 
                         <label class="form-label fw-semibold">CPF:</label>
-                        <input type="text" class="form-control" id="cpf" name="cpf" placeholder="CPF" required>
+                        {{ form.cpf }}
 
                         <label class="form-label fw-semibold">Cargo:</label>
-                        <select name="cargo" id="cargo" class="form-select" required>
-                            <option value="instrutor">Instrutor(a)</option>
-                            <option value="recepcionista">Recepcionista</option>
-                        </select>
+                        {{ form.cargo }}
 
                         <label class="form-label fw-semibold">Turno:</label>
-                        <select name="turno" id="turno" class="form-select" required>
-                            <option value="matutino">Matutino</option>
-                            <option value="vespertino">Vespertino</option>
-                        </select>
+                        {{ form.turno }}
                         
                         <div class="d-flex justify-content-center mt-4">
                             <button class="btn btn-primary" type="submit">Cadastrar Funcionário</button>
@@ -69,7 +63,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#cpf').mask('000.000.000-00', {reverse: true});
+            $('.cpf').mask('000.000.000-00', {reverse: true});
 
             setTimeout(function() {
                 $('.alert').fadeOut('slow');

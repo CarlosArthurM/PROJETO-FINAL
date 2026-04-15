@@ -13,10 +13,10 @@ class pagamentos(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES)
-    valor = models.DecimalField(decimal_places=2, max_digits=10)
+    forma_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, null=False)
+    valor = models.DecimalField(decimal_places=2, max_digits=10, null=False)
     data_pagamento = models.DateField(auto_now_add=True)
-    data_vencimento = models.DateField()
+    data_vencimento = models.DateField(null=False)
     fk_aluno = models.ForeignKey(alunos,db_column='fk_aluno', on_delete=models.SET_NULL, null=True)
 
     class Meta:
@@ -40,15 +40,14 @@ class funcionarios(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    nome = models.CharField(max_length=200)
-    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)
-    cpf = models.CharField(max_length=20, unique=True)
+    nome = models.CharField(max_length=200, null=False)
+    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, null=False)
+    cpf = models.CharField(max_length=20, unique=True, null=False)
     senha = models.CharField(max_length=200, null=True, blank=True)
     turno = models.CharField(max_length=20, choices=TURNO_CHOICES)
 
     class Meta:
         db_table = "funcionarios"
-
 
 
 
@@ -104,7 +103,6 @@ class fichas_treino(models.Model):
 
 
 
-
 # tabela exercicios
 class exercicios(models.Model):
 
@@ -115,7 +113,7 @@ class exercicios(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    nome = models.CharField(max_length=200)
+    nome = models.CharField(max_length=200, null=False)
     grupo_muscular = models.CharField(max_length=100, choices=GRUPO_MUSCULAR_CHOICES)
 
     class Meta:
@@ -126,13 +124,12 @@ class exercicios(models.Model):
 
 
 
-
 # tabela lista_exercicios
 class listas_exercicios(models.Model):
 
     id = models.AutoField(primary_key=True)
-    repeticoes = models.IntegerField()
-    series = models.IntegerField()
+    repeticoes = models.IntegerField(null=False)
+    series = models.IntegerField(null=False)
 
     fk_ficha = models.ForeignKey(
         fichas_treino,

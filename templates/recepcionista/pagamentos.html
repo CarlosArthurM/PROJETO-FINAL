@@ -40,15 +40,10 @@
                 {% csrf_token %}
                 <div>
                     <label class="form-label fw-semibold">Forma de Pagamento</label>
-                    <select class="form-select" name="forma_pagamento" required>
-                        <option value="Pix">Pix</option>
-                        <option value="Cartão Crédito">Cartão Crédito</option>
-                        <option value="Cartão Débito">Cartão Débito</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                    </select>
+                    {{ form.forma_pagamento }}
 
                     <label class="form-label fw-semibold">Valor</label>
-                    <input type="text" name="valor" class="valor form-control" min="1" required>
+                    {{ form.valor }}
 
                     <div class="d-flex justify-content-center mt-4">
                         <button type="submit" class="btn btn-primary">REGISTRAR PAGAMENTO</button>

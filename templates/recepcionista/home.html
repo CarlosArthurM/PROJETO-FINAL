@@ -62,7 +62,7 @@
 
                                         <li>
                                             <label class="form-label fw-semibold">Telefone:</label>
-                                            <input type="text" class="tell form-control" value="{{ aluno.telefone }}" name="tell" placeholder="Telefone" required>
+                                            <input type="text" class="tell form-control" value="{{ aluno.telefone }}" name="telefone" placeholder="Telefone" required>
                                         </li>
 
                                         <li>
@@ -89,7 +89,6 @@
 
                                         <div class="mt-2">
                                             <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="return confirm('Tem certeza que deseja ataualizar os dados desse aluno?')" >Editar Aluno</button>
-                                            
                                         </div>
                                         
                                         <div class="mt-2">
@@ -119,7 +118,6 @@
         $(document).ready(function() {
             $('.tell').mask('(00) 00000-0000');
             $('.cpf').mask('000.000.000-00', {reverse: true});
-            $('.valor').mask('000.000.000.000.000,00', {reverse: true});
         });
 
         $(document).ready(function() {

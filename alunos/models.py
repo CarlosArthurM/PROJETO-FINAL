@@ -7,8 +7,8 @@ from django.db import models
 class alunos(models.Model):
 
     SEXO_CHOICES = [
-        ('F', 'F'),
-        ('M', 'M')
+        ('F', 'Feminino'),
+        ('M', 'Masculino')
     ]
 
     id = models.AutoField(primary_key=True)

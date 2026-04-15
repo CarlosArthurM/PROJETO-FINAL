@@ -3,7 +3,6 @@ from . import views
 
 app_name = 'funcionarios'
 
-
 urlpatterns = [ 
     # Home pages
     path('home_recepcionista', views.home_recepcionista, name='home_recepcionista'),
@@ -15,7 +14,6 @@ urlpatterns = [
     path('cadastrar_funcionario', views.cadastrar_funcionario, name='cadastrar_funcionario'),
     path('editar_funcionario/<int:funcionario_id>', views.editar_funcionario, name='editar_funcionario'),
     path('deletar_funcionario/<int:funcionario_id>', views.deletar_funcionario, name='deletar_funcionario'),
-
 
     # Funcionalidades do Instrutor
     path('cadastro_fichas/<int:aluno_id>', views.cadastro_fichas, name='cadastro_fichas'),
@@ -31,7 +29,6 @@ urlpatterns = [
     path('adicionar_exercicio/<int:aluno_id>/<int:ficha_id>', views.adicionar_exercicio, name='adicionar_exercicio'),
     path('deletar_treino/<int:aluno_id>', views.deletar_treino, name='deletar_treino'),
     path('deletar_ficha/<int:aluno_id>/<int:ficha_id>', views.deletar_ficha, name='deletar_ficha'),
-
 
     # Funcionalidades da Recepção
     path('cadastro_aluno', views.cadastro_aluno, name='tela_cadastro'),
