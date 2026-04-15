@@ -2,6 +2,14 @@
 
 Este sistema foi feito para academias que precisam de um gerenciamento fácil, rápido e simples de funcionários e alunos.
 
+
+## Tecnologias utilizadas
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=fff)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=fff)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=fff)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=fff)
+
 ## O sistema tem as seguintes funcionalidades:
 
 ### Funcionalidades do Administrador:
