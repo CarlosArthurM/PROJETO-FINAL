@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from sistema.models import exercicios
+from funcionarios.models import exercicios
 
 class Command(BaseCommand):
 

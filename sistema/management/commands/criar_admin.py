@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
-from sistema.models import funcionarios
+from funcionarios.models import funcionarios
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        print(args)
 
         if funcionarios.objects.filter(cargo ="administrador").exists() == False:
             funcionarios.objects.create(nome="João Pedro Mello",cargo="administrador",cpf="98763095893",turno="matutino")
