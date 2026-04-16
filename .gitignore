@@ -4,3 +4,4 @@ venv/
 /.vscode
 
 /commit.txt
+migrations/

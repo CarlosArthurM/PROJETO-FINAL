@@ -5,7 +5,6 @@ from datetime import datetime
 import re
 from funcionarios.models import funcionarios, pagamentos
 from alunos.models import alunos
-from funcionarios.views import home_administrador, home_instrutor, home_recepcionista
 
 
 # PÁGINA PRINCIPAL LOGIN PARA ALUNOS
@@ -43,7 +42,7 @@ def login_aluno(request):
             messages.error(request, "ALUNO NÃO ENCONTRADO")
             return redirect('tela_login')
         
-        if aluno.senha is None:
+        if not aluno.senha:
             aluno.senha = senha
             aluno.save()
             messages.success(request, "SENHA CADASTRADA COM SUCESSO. FAÇA LOGIN NOVAMENTE")
@@ -87,7 +86,7 @@ def login_funcionario(request):
             messages.error(request, "FUNCIONÁRIO NÃO ENCONTRADO")
             return redirect('tela_login_fun')
 
-        if funcionario.senha is None:
+        if not funcionario.senha:
             funcionario.senha = senha
             funcionario.save()
             messages.success(request, "SENHA CADASTRADA COM SUCESSO. FAÇA LOGIN NOVAMENTE")

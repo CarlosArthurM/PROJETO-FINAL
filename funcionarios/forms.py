@@ -4,7 +4,6 @@ from decimal import Decimal, InvalidOperation
 import re
 
 
-
 class PessoaBaseForm(forms.ModelForm):
 
     def clean_nome(self):
@@ -15,7 +14,7 @@ class PessoaBaseForm(forms.ModelForm):
 
         if len(nome.strip()) < 3:
             raise forms.ValidationError("NOME MUITO CURTO")
-
+        
         return nome.strip()
 
 
@@ -68,7 +67,6 @@ class AlunoForm(PessoaBaseForm):
             'sexo': forms.Select(attrs={'class': 'form-select'}),
             'data_nascimento': forms.DateInput(attrs={'class': 'form-control','type': 'date'})
         }
-
 
 
 

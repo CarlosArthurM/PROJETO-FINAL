@@ -25,14 +25,20 @@
         </nav>
     </header>
 
+    <!-- Mensagens Flash do Django -->
     {% if messages %}
+    <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999; min-width: 320px; max-width: 480px;">
         {% for message in messages %}
-            <div class="position-fixed top-0 start-50 translate-middle-x mt-4" role="alert" style="z-index: 1;">
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show p-2">
-                    <strong>{{ message }}</strong>
-                </div>
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show shadow d-flex align-items-center gap-2 mb-2" role="alert">
+                {% if message.tags == 'error' %}
+                    <span>⚠️</span>
+                {% else %}
+                    <span>✅</span>
+                {% endif %}
+                <strong>{{ message }}</strong>
             </div>
         {% endfor %}
+    </div>
     {% endif %}
 
     <main>
@@ -58,17 +64,18 @@
 
                                         <li>
                                             <label class="form-label fw-semibold">Cargo:</label>
-                                            <select name="cargo" id="cargo" class="form-select">
-                                                <option {% if funcionario.cargo == "instrutor" %}selected{% endif %} value="instrutor">Instrutor(a)</option>
-                                                <option {% if funcionario.cargo == "recepcionista" %}selected{% endif %} value="recepcionista">Recepcionista</option>
+                                            <select name="cargo" class="form-select">
+                                                <option {% if funcionario.cargo == "instrutor" %}selected{% endif %} value="instrutor">instrutor(a)</option>
+                                                <option {% if funcionario.cargo == "recepcionista" %}selected{% endif %} value="recepcionista">recepcionista</option>
+                                                <option {% if funcionario.cargo == "recepcionista" %}selected{% endif %} value="recepcionista">administrador</option>
                                             </select>
                                         </li>
 
                                         <li>
                                             <label class="form-label fw-semibold">Turno:</label>
                                             <select name="turno" class="form-select">
-                                                <option value="matutino" {% if funcionario.turno == "matutino" %}selected{% endif %}>Matutino</option>
-                                                <option value="vespertino" {% if funcionario.turno == "vespertino" %}selected{% endif %}>Vespertino</option>
+                                                <option value="matutino" {% if funcionario.turno == "matutino" %}selected{% endif %}>matutino</option>
+                                                <option value="vespertino" {% if funcionario.turno == "vespertino" %}selected{% endif %}>vespertino</option>
                                             </select>
                                         </li>
 
@@ -100,7 +107,9 @@
             $('.cpf').mask('000.000.000-00', {reverse: true});
 
             setTimeout(function() {
-                $('.alert').fadeOut('slow');
+                $('.alert').fadeOut(600, function() {
+                    $(this).remove();
+                });
             }, 5000);
         });
     </script>
