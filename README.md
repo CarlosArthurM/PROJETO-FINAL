@@ -16,7 +16,7 @@ Sistema web desenvolvido para facilitar o gerenciamento de academias, permitindo
 ## 📋 Funcionalidades
 
 ### 👨‍💼 Administrador
-- Gerenciamento de funcionários (instrutores e recepcionistas)
+- Gerenciamento de funcionários 
 - Cadastro, edição e exclusão de funcionários
 
 ### 🏋️ Instrutor
@@ -90,13 +90,4 @@ ADMINISTRADOR CADASTRADO COM SUCESSO
 
 ## 💡 Possíveis melhorias futuras
 
-- Sistema de autenticação com login
 - Dashboard com gráficos
-- Integração com pagamentos online
-- Deploy em produção
-
----
-
-## 📌 Observações
-
-Este projeto foi desenvolvido com fins educacionais e prática de desenvolvimento web com Django.
